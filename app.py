@@ -11,20 +11,24 @@ from google import genai
 
 import streamlit as st
 from google import genai
+import os
 
-# 从 Secrets 中获取 Key
-MY_KEY = st.secrets["MY_KEY"]
+# --- 删掉了所有的 os.environ["HTTP_PROXY"] 设置 ---
 
+# 1. 从 Secrets 读取 Key (确保你在 Streamlit 后台填了它)
+if "MY_KEY" in st.secrets:
+    MY_KEY = st.secrets["MY_KEY"]
+else:
+    st.error("请在 Streamlit Secrets 中配置 MY_KEY")
+    st.stop()
+
+# 2. 初始化客户端
 client = genai.Client(api_key=MY_KEY)
 
-# --- 4. 初始化 AI 客户端 ---
-try:
-    client = genai.Client(api_key=MY_KEY)
-except Exception as e:
-    st.error(f"初始化失败: {e}")
+st.title("我的云端 AI 助手")
 
-st.set_page_config(page_title="Gemini AI 助手", layout="centered")
-st.title("🤖 我的私人 AI 助手")
+# ... 后面的聊天界面代码保持不变 ...
+# 记得模型名字依然用之前成功的 "gemini-2.0-flash"
 
 # 初始化对话历史
 if "messages" not in st.session_state:
@@ -64,4 +68,5 @@ if prompt := st.chat_input("想问点什么？"):
                 st.info("提示：请对比上面的列表。如果列表中没有 'models/gemini-1.5-flash'，请在代码里更换模型名称。")
             except:
                 st.error("无法获取模型列表，这通常意味着您的 API Key 彻底失效或网络完全不通。")
+
 
