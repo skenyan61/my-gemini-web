@@ -7,17 +7,15 @@ import io
 import streamlit as st
 from google import genai
 
-# --- 2. 强制网络代理 (请确保 7890 是你代理软件的端口) ---
-os.environ["HTTP_PROXY"] = "http://127.0.0.1:7897"
-os.environ["HTTPS_PROXY"] = "http://127.0.0.1:7897"
+
 
 import streamlit as st
+from google import genai
 
-if "MY_KEY" in st.secrets:
-    MY_KEY = st.secrets["MY_KEY"]
-else:
-    # 这样你在本地没配置 secrets 时，也可以手动填入做测试
-    MY_KEY = "你的本地测试KEY"
+# 从 Secrets 中获取 Key
+MY_KEY = st.secrets["MY_KEY"]
+
+client = genai.Client(api_key=MY_KEY)
 
 # --- 4. 初始化 AI 客户端 ---
 try:
@@ -66,3 +64,4 @@ if prompt := st.chat_input("想问点什么？"):
                 st.info("提示：请对比上面的列表。如果列表中没有 'models/gemini-1.5-flash'，请在代码里更换模型名称。")
             except:
                 st.error("无法获取模型列表，这通常意味着您的 API Key 彻底失效或网络完全不通。")
+
